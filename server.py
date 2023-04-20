@@ -79,7 +79,7 @@ def konvert_output():
                         db_sess.commit()
         except Exception:
             abort(404)
-        render_template('konvert.html', name=f'{current_user.surname} {current_user.name} {current_user.patronymic}', text='Файл успешно загружен', title="Конвертация из Excel")
+        return render_template('konvert.html', name=f'{current_user.surname} {current_user.name} {current_user.patronymic}', text='Файл успешно загружен', title="Конвертация из Excel")
     
 @login_manager.user_loader
 def load_user(id):
@@ -102,6 +102,7 @@ def login():
 @app.route('/students', methods=['GET', 'POST'])
 def success():
     global res_f
+
     db_sess = db_session.create_session()
     if current_user.admin:
         res1 = db_sess.query(School.name).distinct().all()
@@ -156,7 +157,7 @@ def success():
                 olympiad[i] = olympiad[i][0]
             year = request.form.getlist('type5')
             for i in range(len(year)):
-                year[i] = year[i][0]
+                year[i] = year[i]
             if len(school) == 0:
                 school = db_sess.query(School.id).distinct().all()
                 for i in range(len(school)):
@@ -173,7 +174,9 @@ def success():
                     olympiad[i] = olympiad[i][0]
             if len(year) == 0:
                 year = res4
-            print(teacher)
+                print(1)
+                
+            print(year)
             res_f = db_sess.query(Student.id, Student.surname, Student.name, Student.patronymic, Student.class_writing, Student.class_take, Student.school_id, Student.status, Student.olymp_id, Student.user_id, Student.year).filter(Student.class_writing.in_(classs), Student.school_id.in_(school), Student.olymp_id.in_(olympiad), Student.year.in_(year), Student.user_id.in_(teacher)).all()
             print(db_sess.query(Student.id, Student.surname, Student.name, Student.patronymic, Student.class_writing, Student.class_take, Student.school_id, Student.status, Student.olymp_id, Student.user_id, Student.year).first())
             for i in range(len(res_f)):
